@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doodle Quizzes — sketch puzzles</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <canvas id="dots-bg" class="dots-bg" aria-hidden="true"></canvas>
+  <div class="paper-texture" aria-hidden="true"></div>
+  <div class="pencil-layer" id="pencil-layer" aria-hidden="true"></div>
+
+  <header class="site-header sketch-box">
+    <button type="button" class="btn-icon btn-back hidden" id="btn-back" aria-label="Go back">←</button>
+    <h1 class="logo" id="site-logo">Doodle Quizzes</h1>
+    <div class="header-actions">
+      <span class="points-badge sketch-pill" id="header-points">0 pts</span>
+      <button type="button" class="btn-icon" id="btn-settings" aria-label="Settings">⚙</button>
+      <button type="button" class="btn-icon" id="btn-account" aria-label="Account">☺</button>
+      <button type="button" class="btn-icon" id="btn-leaderboard" aria-label="Leaderboard">★</button>
+    </div>
+  </header>
+
+  <main id="app" class="app">
+    <section class="view view-active" data-view="home">
+      <p class="tagline">sketchbook puzzles · infinite AI challenges</p>
+      <p class="guest-banner sketch-box" id="guest-banner">Playing as guest — <button type="button" class="btn-link" id="guest-login">log in</button> to save forever</p>
+
+      <div class="daily-card sketch-box" id="daily-card">
+        <h2 class="section-title">☀ daily doodle</h2>
+        <p class="daily-desc" id="daily-desc">One challenge per day — quiz, math, or memory — 1.5× points</p>
+        <button type="button" class="btn-submit sketch-box" id="btn-daily">play daily</button>
+        <p class="daily-done hidden" id="daily-done">✓ daily complete — come back tomorrow!</p>
+      </div>
+
+      <div class="difficulty-legend sketch-box">
+        <h2 class="section-title">difficulty keys</h2>
+        <ul class="difficulty-list" id="difficulty-legend"></ul>
+      </div>
+
+      <div class="home-actions">
+        <button type="button" class="btn-category sketch-box idle-wobble" data-go="quiz-categories">
+          <span class="btn-category-icon">?</span>
+          <span class="btn-category-label">Quiz</span>
+          <span class="btn-category-hint">AI clues · infinite puzzles</span>
+        </button>
+        <button type="button" class="btn-category sketch-box idle-wobble" data-go="math-categories">
+          <span class="btn-category-icon">∑</span>
+          <span class="btn-category-label">Math</span>
+          <span class="btn-category-hint">AI problems · every difficulty</span>
+        </button>
+        <button type="button" class="btn-category sketch-box idle-wobble" data-go="memory-difficulty">
+          <span class="btn-category-icon">💡✏️</span>
+          <span class="btn-category-label">Memory</span>
+          <span class="btn-category-hint">grids · sequences · shapes · doodles</span>
+        </button>
+        <button type="button" class="btn-category sketch-box idle-wobble" data-go="tutorial">
+          <span class="btn-category-icon">📖</span>
+          <span class="btn-category-label">Quiz Tutorial</span>
+        </button>
+        <button type="button" class="btn-category sketch-box idle-wobble" data-go="math-tutorial">
+          <span class="btn-category-icon">📐</span>
+          <span class="btn-category-label">Math Tutorial</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="view" data-view="auth">
+      <h2 class="page-title" id="auth-title">log in</h2>
+      <p class="page-sub">save points & progress on this device</p>
+      <form class="auth-form sketch-box" id="auth-form">
+        <label for="auth-username">username</label>
+        <input type="text" id="auth-username" autocomplete="username" required minlength="3" maxlength="20">
+        <label for="auth-password">password</label>
+        <input type="password" id="auth-password" autocomplete="current-password" required minlength="4">
+        <p class="auth-error hidden" id="auth-error"></p>
+        <button type="submit" class="btn-submit sketch-box idle-wobble" id="auth-submit">log in</button>
+      </form>
+      <button type="button" class="btn-text" id="auth-toggle">need an account? register</button>
+      <button type="button" class="btn-text danger-text" id="auth-logout" hidden>log out</button>
+    </section>
+
+    <section class="view" data-view="settings">
+      <h2 class="page-title">settings</h2>
+      <div class="settings-panel sketch-box">
+        <label class="setting-row">
+          <span>master volume</span>
+          <input type="range" id="set-volume" min="0" max="100" value="70">
+          <span id="set-volume-val">70</span>
+        </label>
+        <label class="setting-row">
+          <span>theme</span>
+          <select id="set-theme">
+            <option value="light">light mode</option>
+            <option value="dark">dark mode</option>
+            <option value="midnight">midnight mode</option>
+            <option value="custom">custom color</option>
+          </select>
+        </label>
+        <label class="setting-row hidden" id="custom-color-row">
+          <span>custom accent</span>
+          <input type="color" id="set-custom-color" value="#8e44ad">
+        </label>
+        <label class="setting-row checkbox-row">
+          <input type="checkbox" id="set-leaderboard" checked>
+          <span>show me on leaderboard</span>
+        </label>
+      </div>
+    </section>
+
+    <section class="view" data-view="tutorial">
+      <h2 class="page-title t-big t-cursive">Hidden Clues</h2>
+      <article class="tutorial-rich sketch-box">
+        <h3 class="t-sub">What are hidden clues?</h3>
+        <p>In <span class="t-color t-insane">Hidden Clues</span> and tricky categories, the answer is <em class="t-cursive">never</em> spelled out directly.</p>
+        <h3 class="t-sub">How to solve</h3>
+        <ol>
+          <li><span class="t-color t-easy">Read twice</span> — fast, then slow.</li>
+          <li>Count <span class="t-big">letter boxes</span> for answer length.</li>
+          <li>Hints add <span class="t-color t-hard">new sentences</span> — never letters! <span class="t-color t-harder">3/day</span>, each costs <span class="t-color t-extreme">30% points</span>.</li>
+        </ol>
+        <p class="t-example">"Look between the lines — the answer hides in plain sight."</p>
+        <p class="t-note">Every puzzle is <span class="t-color t-normal">AI-generated</span> for your exact difficulty — Easy and Extreme feel totally different.</p>
+      </article>
+      <button type="button" class="btn-submit sketch-box idle-wobble" data-go="quiz-categories">play quiz →</button>
+    </section>
+
+    <section class="view" data-view="math-tutorial">
+      <h2 class="page-title t-big t-cursive">Math Mode</h2>
+      <article class="tutorial-rich sketch-box">
+        <h3 class="t-sub">Difficulty rules</h3>
+        <ul>
+          <li><span class="t-color t-easy">Easy</span> — only <span class="t-big">+</span> and <span class="t-big">−</span></li>
+          <li><span class="t-color t-normal">Normal+</span> — <span class="t-big">×</span> and <span class="t-big">÷</span> appear</li>
+          <li><span class="t-color t-harder">Harder+</span> — <span class="t-cursive">fractions</span> allowed</li>
+          <li><span class="t-color t-insane">Insane+</span> — <span class="t-big">√ ∫ ∑ π</span> symbols</li>
+          <li><span class="t-color t-extreme">Extreme</span> — toughest AI in each category</li>
+        </ul>
+        <h3 class="t-sub">Tips</h3>
+        <p>Use the <span class="t-color t-insane">math chars</span> panel for symbols your keyboard lacks. Geometry shows <span class="t-cursive">sketch drawings</span> and 3D volume problems.</p>
+        <p class="t-note"><span class="t-color t-hard">Calculus</span> is the hardest category — starts at Hard difficulty.</p>
+      </article>
+      <button type="button" class="btn-submit sketch-box idle-wobble" data-go="math-categories">play math →</button>
+    </section>
+
+    <section class="view" data-view="quiz-categories">
+      <h2 class="page-title">quiz categories</h2>
+      <p class="page-sub">AI builds a new clue every round</p>
+      <div class="category-grid" id="quiz-category-grid"></div>
+    </section>
+
+    <section class="view" data-view="math-categories">
+      <h2 class="page-title">math categories</h2>
+      <p class="page-sub">infinite procedural problems</p>
+      <div class="category-grid" id="math-category-grid"></div>
+    </section>
+
+    <section class="view" data-view="difficulty">
+      <h2 class="page-title" id="difficulty-title">choose difficulty</h2>
+      <p class="page-sub" id="difficulty-sub"></p>
+      <div class="difficulty-pick" id="difficulty-pick"></div>
+    </section>
+
+    <section class="view" data-view="quiz-play">
+      <div class="game-meta">
+        <span class="badge sketch-pill" id="quiz-badge-cat"></span>
+        <span class="badge sketch-pill" id="quiz-badge-diff"></span>
+        <span class="badge sketch-pill points-pill" id="quiz-points-preview"></span>
+      </div>
+      <p class="clue sketch-box pencil-scribble" id="quiz-clue"></p>
+      <p class="hint-clue sketch-box hidden" id="quiz-hint-clue"></p>
+      <div class="letter-boxes" id="letter-boxes"></div>
+      <div class="quiz-actions-row">
+        <button type="button" class="btn-hint sketch-box idle-wobble" id="btn-quiz-hint">hint 💡 (<span id="hints-left">3</span>)</button>
+      </div>
+      <form class="answer-form sketch-box" id="quiz-form">
+        <label for="quiz-answer">your answer</label>
+        <input type="text" id="quiz-answer" autocomplete="off" spellcheck="false">
+        <button type="submit" class="btn-submit sketch-box idle-wobble">submit ✎</button>
+      </form>
+      <div class="feedback hidden" id="quiz-feedback" role="status"></div>
+      <div class="game-nav">
+        <button type="button" class="btn-secondary sketch-box idle-wobble" id="quiz-next">next puzzle →</button>
+      </div>
+      <p class="progress-text" id="quiz-progress"></p>
+    </section>
+
+    <section class="view" data-view="math-play">
+      <div class="math-play-layout">
+        <div class="math-main">
+          <div class="game-meta">
+            <span class="badge sketch-pill" id="math-badge-cat"></span>
+            <span class="badge sketch-pill" id="math-badge-diff"></span>
+            <span class="badge sketch-pill points-pill" id="math-points-preview"></span>
+          </div>
+          <div class="problem-wrap sketch-box pencil-scribble">
+            <div id="math-drawing" class="math-drawing"></div>
+            <p class="problem" id="math-problem"></p>
+          </div>
+          <label class="notes-label" for="math-notes">thinking notes</label>
+          <textarea id="math-notes" class="notes-area sketch-box" rows="4"></textarea>
+          <form class="answer-form sketch-box" id="math-form">
+            <label for="math-answer">final answer</label>
+            <input type="text" id="math-answer" autocomplete="off">
+            <button type="submit" class="btn-submit sketch-box idle-wobble">submit ✎</button>
+          </form>
+          <div class="feedback hidden" id="math-feedback" role="status"></div>
+          <div class="game-nav">
+            <button type="button" class="btn-secondary sketch-box idle-wobble" id="math-next">next problem →</button>
+          </div>
+          <p class="progress-text" id="math-progress"></p>
+        </div>
+        <aside class="math-symbols-panel sketch-box" id="math-symbols-panel">
+          <h3 class="symbols-title">math chars</h3>
+          <div class="symbols-grid" id="symbols-grid"></div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="view" data-view="memory-play">
+      <div class="game-meta">
+        <span class="badge sketch-pill" id="memory-badge-diff"></span>
+        <span class="badge sketch-pill points-pill" id="memory-points-preview"></span>
+      </div>
+      <h2 class="memory-title" id="memory-title">Memory</h2>
+      <p class="memory-instruction" id="memory-instruction"></p>
+      <p class="memory-timer" id="memory-timer"></p>
+      <div id="memory-stage" class="memory-stage sketch-box"></div>
+      <div class="feedback hidden" id="memory-feedback" role="status"></div>
+      <div class="game-nav">
+        <button type="button" class="btn-secondary sketch-box idle-wobble hidden" id="memory-next">next challenge →</button>
+        <button type="button" class="btn-submit sketch-box idle-wobble hidden" id="memory-submit">check ✎</button>
+      </div>
+    </section>
+
+    <section class="view" data-view="leaderboard">
+      <h2 class="page-title">leaderboard</h2>
+      <div class="leaderboard-tabs sketch-box">
+        <button type="button" class="tab active" data-lb-tab="quiz">quiz</button>
+        <button type="button" class="tab" data-lb-tab="math">math</button>
+        <button type="button" class="tab" data-lb-tab="memory">memory</button>
+        <button type="button" class="tab" data-lb-tab="points">points</button>
+      </div>
+      <div class="leaderboard-panel" id="leaderboard-content"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer"><p>Doodle Quizzes · play free</p></footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/math-generator.js"></script>
+  <script src="js/quiz-generator.js"></script>
+  <script src="js/memory-engine.js"></script>
+  <script src="js/settings.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/sounds.js"></script>
+  <script src="js/dots-bg.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
